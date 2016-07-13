@@ -48,19 +48,14 @@ public class GoogleCallbackStatus implements GoogleApiClient.ConnectionCallbacks
         LocationAvailability locationAvailability = LocationServices.FusedLocationApi.getLocationAvailability(LocationService.getInstance().getGoogleApiClient());
         if (locationAvailability.isLocationAvailable()) {
             LocationRequest request = new LocationRequest()
-                    .setPriority(LocationRequest.PRIORITY_LOW_POWER)
+                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                     .setInterval(Constants.LOCATION_REQUEST_TIME_INTERVAL)
-                    .setExpirationDuration(Constants.LOCATION_REQUEST_EXPIRATION_DURATION)
-                    .setExpirationTime(Constants.LOCATION_REQUEST_EXPIRATION_TIME)
-                    .setFastestInterval(Constants.LOCATION_REQUEST_FASTEST_INTERVAL)
-                    .setNumUpdates(Constants.LOCATION_REQUEST_NUM_UPDATE)
-                    .setSmallestDisplacement(Constants.LOCATION_REQUEST_SMALLEST_DISPLACEMENT);
+                    .setFastestInterval(Constants.LOCATION_REQUEST_FASTEST_INTERVAL);
             LocationServices.FusedLocationApi.requestLocationUpdates(
                     LocationService.getInstance().getGoogleApiClient(),
                     request,
                     this
             );
-            showLocationLatLong(LocationServices.FusedLocationApi.getLastLocation(LocationService.getInstance().getGoogleApiClient()));
         }
     }
 
@@ -80,7 +75,7 @@ public class GoogleCallbackStatus implements GoogleApiClient.ConnectionCallbacks
     }
 
     public void showLocationLatLong(Location location) {
-        String latLong = String.format("Lat: %.3f, Long: %.3f", location.getLatitude(), location.getLongitude());
+        String latLong = String.format("Lat: %.7f, Long: %.7f", location.getLatitude(), location.getLongitude());
         Log.e("Location", latLong);
         Toast.makeText(Contexter.getInstance().getApplicationContext(), latLong, Toast.LENGTH_SHORT).show();
     }
