@@ -23,7 +23,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if(LocationService.getInstance().getGoogleApiClient().isConnected()) {
+        if( LocationService.getInstance().getGoogleApiClient() != null
+        && LocationService.getInstance().getGoogleApiClient().isConnected()) {
             LocationService.getInstance().getGoogleApiClient().disconnect();
         }
     }

@@ -22,7 +22,7 @@ import com.google.android.gms.location.LocationServices;
 /**
  * Created by nut on 7/13/16.
  */
-public class GoogleCallbackStatus implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class GoogleCallbackStatus implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     public static GoogleCallbackStatus googleCallbackStatus;
 
@@ -56,16 +56,10 @@ public class GoogleCallbackStatus implements GoogleApiClient.ConnectionCallbacks
                         .setFastestInterval(Constants.LOCATION_REQUEST_FASTEST_INTERVAL)
                         .setNumUpdates(Constants.LOCATION_REQUEST_NUM_UPDATE)
                         .setSmallestDisplacement(Constants.LOCATION_REQUEST_SMALLEST_DISPLACEMENT);
-                LocationListener listener = new LocationListener() {
-                    @Override
-                    public void onLocationChanged(Location location) {
-                        Toast.makeText(Contexter.getInstance().getApplicationContext(), String.format("Lat: %.3f, Long: %.3f", location.getLatitude(), location.getLongitude()), Toast.LENGTH_SHORT).show();
-                    }
-                };
                 LocationServices.FusedLocationApi.requestLocationUpdates(
                         LocationService.getInstance().getGoogleApiClient(),
                         request,
-                        listener
+                        this
                 );
             } else {
 
@@ -83,5 +77,10 @@ public class GoogleCallbackStatus implements GoogleApiClient.ConnectionCallbacks
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Toast.makeText(Contexter.getInstance().getApplicationContext(), String.format("Lat: %.3f, Long: %.3f", location.getLatitude(), location.getLongitude()), Toast.LENGTH_SHORT).show();
     }
 }
