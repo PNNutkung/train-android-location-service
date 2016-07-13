@@ -6,7 +6,8 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.nut.locationservicepractice.applications.Contexter;
@@ -39,34 +40,28 @@ public class GoogleCallbackStatus implements GoogleApiClient.ConnectionCallbacks
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(
-                Contexter.getInstance().getApplicationContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(
-                Contexter.getInstance().getApplicationContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                ) {
-            LocationAvailability locationAvailability = LocationServices.FusedLocationApi.getLocationAvailability(LocationService.getInstance().getGoogleApiClient());
-            if (locationAvailability.isLocationAvailable()) {
-                LocationRequest request = new LocationRequest()
-                        .setPriority(LocationRequest.PRIORITY_LOW_POWER)
-                        .setInterval(Constants.LOCATION_REQUEST_TIME_INTERVAL)
-                        .setExpirationDuration(Constants.LOCATION_REQUEST_EXPIRATION_DURATION)
-                        .setExpirationTime(Constants.LOCATION_REQUEST_EXPIRATION_TIME)
-                        .setFastestInterval(Constants.LOCATION_REQUEST_FASTEST_INTERVAL)
-                        .setNumUpdates(Constants.LOCATION_REQUEST_NUM_UPDATE)
-                        .setSmallestDisplacement(Constants.LOCATION_REQUEST_SMALLEST_DISPLACEMENT);
-                LocationServices.FusedLocationApi.requestLocationUpdates(
-                        LocationService.getInstance().getGoogleApiClient(),
-                        request,
-                        this
-                );
-            } else {
-
-            }
+        if (ContextCompat.checkSelfPermission(Contexter.getInstance().getApplicationContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-
+        LocationAvailability locationAvailability = LocationServices.FusedLocationApi.getLocationAvailability(LocationService.getInstance().getGoogleApiClient());
+        if (locationAvailability.isLocationAvailable()) {
+            LocationRequest request = new LocationRequest()
+                    .setPriority(LocationRequest.PRIORITY_LOW_POWER)
+                    .setInterval(Constants.LOCATION_REQUEST_TIME_INTERVAL)
+                    .setExpirationDuration(Constants.LOCATION_REQUEST_EXPIRATION_DURATION)
+                    .setExpirationTime(Constants.LOCATION_REQUEST_EXPIRATION_TIME)
+                    .setFastestInterval(Constants.LOCATION_REQUEST_FASTEST_INTERVAL)
+                    .setNumUpdates(Constants.LOCATION_REQUEST_NUM_UPDATE)
+                    .setSmallestDisplacement(Constants.LOCATION_REQUEST_SMALLEST_DISPLACEMENT);
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    LocationService.getInstance().getGoogleApiClient(),
+                    request,
+                    this
+            );
+            showLocationLatLong(LocationServices.FusedLocationApi.getLastLocation(LocationService.getInstance().getGoogleApiClient()));
+        }
     }
 
     @Override
@@ -81,6 +76,12 @@ public class GoogleCallbackStatus implements GoogleApiClient.ConnectionCallbacks
 
     @Override
     public void onLocationChanged(Location location) {
-        Toast.makeText(Contexter.getInstance().getApplicationContext(), String.format("Lat: %.3f, Long: %.3f", location.getLatitude(), location.getLongitude()), Toast.LENGTH_SHORT).show();
+        showLocationLatLong(location);
+    }
+
+    public void showLocationLatLong(Location location) {
+        String latLong = String.format("Lat: %.3f, Long: %.3f", location.getLatitude(), location.getLongitude());
+        Log.e("Location", latLong);
+        Toast.makeText(Contexter.getInstance().getApplicationContext(), latLong, Toast.LENGTH_SHORT).show();
     }
 }
